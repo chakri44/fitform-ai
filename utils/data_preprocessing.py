@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 # Paths
 DATA_PATH = "data/frames"
 LABELS_PATH = "data/labels.csv" 
- 
+
 # Output directories
 TRAIN_PATH = "data/train"
 VAL_PATH = "data/val"
@@ -16,8 +16,20 @@ TEST_PATH = "data/test"
 for path in [TRAIN_PATH, VAL_PATH, TEST_PATH]:
     os.makedirs(path, exist_ok=True)
 
-# Load labels
-labels_df = pd.read_csv(LABELS_PATH)
+# Generate labels.csv if it doesn't exist
+if not os.path.exists(LABELS_PATH):
+    print("⚠️ 'labels.csv' not found — generating new labels...")
+
+    # Generate labels (Example: alternating 'correct' and 'incorrect' postures)
+    frames = sorted(os.listdir(DATA_PATH))
+    labels = ["correct_posture" if i % 2 == 0 else "incorrect_posture" for i in range(len(frames))]
+
+    # Create and save labels.csv
+    labels_df = pd.DataFrame({"frame_name": frames, "label": labels})
+    labels_df.to_csv(LABELS_PATH, index=False)
+    print(f"✅ Labels.csv created successfully with {len(labels)} entries.")
+else:
+    labels_df = pd.read_csv(LABELS_PATH)
 
 # Split data
 train_data, test_data = train_test_split(labels_df, test_size=0.2, random_state=42)
