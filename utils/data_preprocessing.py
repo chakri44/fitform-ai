@@ -1,25 +1,39 @@
-import cv2
 import os
+import pandas as pd
+import shutil
+from sklearn.model_selection import train_test_split
 
-def extract_frames(video_path, output_folder):
-    os.makedirs(output_folder, exist_ok=True)
-    
-    cap = cv2.VideoCapture(video_path)
-    frame_count = 0
+# Paths
+DATA_PATH = "data/frames"
+LABELS_PATH = "data/labels.csv"
 
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+# Output directories
+TRAIN_PATH = "data/train"
+VAL_PATH = "data/val"
+TEST_PATH = "data/test"
 
-        frame_path = os.path.join(output_folder, f'frame_{frame_count:04d}.jpg')
-        cv2.imwrite(frame_path, frame)
-        frame_count += 1
+# Create folders if they don't exist
+for path in [TRAIN_PATH, VAL_PATH, TEST_PATH]:
+    os.makedirs(path, exist_ok=True)
 
-    cap.release()
-    print(f"Extracted {frame_count} frames to {output_folder}")
+# Load labels
+labels_df = pd.read_csv(LABELS_PATH)
 
-if __name__ == "__main__":
-    video_path = "data/sample_video.mp4"
-    output_folder = "data/frames"
-    extract_frames(video_path, output_folder)
+# Split data
+train_data, test_data = train_test_split(labels_df, test_size=0.2, random_state=42)
+train_data, val_data = train_test_split(train_data, test_size=0.1, random_state=42)
+
+# Function to move files
+def move_files(data, target_folder):
+    for _, row in data.iterrows():
+        src = os.path.join(DATA_PATH, row['frame_name'])
+        dst = os.path.join(target_folder, row['frame_name'])
+        if os.path.exists(src):
+            shutil.copy(src, dst)
+
+# Organize data
+move_files(train_data, TRAIN_PATH)
+move_files(val_data, VAL_PATH)
+move_files(test_data, TEST_PATH)
+
+print(f"Data split complete: {len(train_data)} train, {len(val_data)} val, {len(test_data)} test samples.")
