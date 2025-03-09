@@ -36,4 +36,4 @@ move_files(train_data, TRAIN_PATH)
 move_files(val_data, VAL_PATH)
 move_files(test_data, TEST_PATH)
 
-print(f"Data split complete: {len(train_data)} train, {len(val_data)} val, {len(test_data)} test samples.")
+print(f"✅ Data split complete: {len(train_data)} train, {len(val_data)} val, {len(test_data)} test samples.")
