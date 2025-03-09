@@ -1,0 +1,5 @@
+__pycache__/
+*.log
+*.csv
+*.h5
+.DS_Store
