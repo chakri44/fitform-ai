@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 # Paths
 DATA_PATH = "data/frames"
 LABELS_PATH = "data/labels.csv"
-
+ 
 # Output directories
 TRAIN_PATH = "data/train"
 VAL_PATH = "data/val"
